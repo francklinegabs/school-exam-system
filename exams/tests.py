@@ -148,3 +148,43 @@ class MarkEntryAccessTest(ResultsFixtureMixin, TestCase):
         self.client.login(username="owner", password="pw")
         response = self.client.get(self.url)
         self.assertRedirects(response, reverse("dashboard"))
+
+
+class SignUpTest(TestCase):
+    def good_form(self, **overrides):
+        data = {
+            "username": "wmwangi", "first_name": "Wanjiru", "last_name": "Mwangi",
+            "staff_no": "TSC900",
+            "password1": "korir-mountain-42", "password2": "korir-mountain-42",
+        }
+        data.update(overrides)
+        return data
+
+    def test_signup_creates_teacher_and_logs_in(self):
+        response = self.client.post(reverse("signup"), self.good_form())
+        self.assertRedirects(response, reverse("dashboard"))
+        teacher = Teacher.objects.get(staff_no="TSC900")
+        self.assertEqual(teacher.user.username, "wmwangi")
+        self.assertEqual(teacher.user.get_full_name(), "Wanjiru Mwangi")
+        # Logged in straight away
+        self.assertEqual(self.client.get(reverse("dashboard")).status_code, 200)
+
+    def test_duplicate_staff_no_rejected(self):
+        user = User.objects.create_user("existing", password="pw")
+        Teacher.objects.create(user=user, staff_no="TSC900")
+        response = self.client.post(reverse("signup"), self.good_form())
+        self.assertEqual(response.status_code, 200)  # re-renders with error
+        self.assertContains(response, "already registered")
+        self.assertFalse(User.objects.filter(username="wmwangi").exists())
+
+    def test_password_mismatch_rejected(self):
+        response = self.client.post(
+            reverse("signup"), self.good_form(password2="different-pw-9"))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(User.objects.filter(username="wmwangi").exists())
+
+    def test_logged_in_user_redirected_away(self):
+        User.objects.create_user("someone", password="pw")
+        self.client.login(username="someone", password="pw")
+        response = self.client.get(reverse("signup"))
+        self.assertRedirects(response, reverse("dashboard"))

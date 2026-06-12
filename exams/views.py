@@ -1,14 +1,31 @@
 from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 
+from .forms import TeacherSignUpForm
 from .models import (ClassRoom, Exam, Mark, Student, Subject, Teacher,
                      TeachingAssignment)
 from .results import class_results, form_results, student_report
+
+
+def signup(request):
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+    form = TeacherSignUpForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        user = form.save()
+        login(request, user)
+        messages.success(
+            request,
+            "Welcome! Your teacher account is ready. The admin will assign "
+            "you subjects and classes before you can enter marks.")
+        return redirect("dashboard")
+    return render(request, "registration/signup.html", {"form": form})
 
 
 def _teacher_or_none(user) -> Teacher | None:
