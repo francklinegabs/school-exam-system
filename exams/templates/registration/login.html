@@ -1,0 +1,14 @@
+{% extends "exams/base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+<div class="card" style="max-width: 380px; margin: 60px auto;">
+  <h2>Teacher / Admin Login</h2>
+  {% if form.errors %}<div class="msg error">Wrong username or password.</div>{% endif %}
+  <form method="post">
+    {% csrf_token %}
+    <p><label>Username<br>{{ form.username }}</label></p>
+    <p><label>Password<br>{{ form.password }}</label></p>
+    <button class="btn" type="submit">Log in</button>
+  </form>
+</div>
+{% endblock %}

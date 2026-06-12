@@ -1,0 +1,32 @@
+{% extends "exams/base.html" %}
+{% load exam_extras %}
+{% block title %}Class results{% endblock %}
+{% block content %}
+<h2>{{ classroom }} — {{ exam }}</h2>
+<p class="noprint"><button class="btn secondary" onclick="window.print()">Print</button></p>
+<table>
+  <tr>
+    <th>Pos</th><th>Adm No</th><th>Student</th>
+    {% for s in subjects %}<th class="num">{{ s.name|truncatechars:8 }}</th>{% endfor %}
+    <th class="num">Total</th><th class="num">Pts</th><th>Grade</th><th>Report</th>
+  </tr>
+  {% for line in lines %}
+  <tr>
+    <td class="num">{{ line.rank }}</td>
+    <td>{{ line.student.admission_no }}</td>
+    <td>{{ line.student.full_name }}</td>
+    {% for s in subjects %}
+      {% with entry=line.scores|get_item:s.id %}
+        <td class="num">{% if entry %}{{ entry.0|floatformat:0 }} <small>{{ entry.1 }}</small>{% else %}—{% endif %}</td>
+      {% endwith %}
+    {% endfor %}
+    <td class="num">{{ line.total|floatformat:0 }}</td>
+    <td class="num">{{ line.total_points }}</td>
+    <td class="grade">{{ line.mean_grade }}</td>
+    <td class="noprint"><a href="{% url 'report' line.student.id exam.id %}">view</a></td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="20">No students found.</td></tr>
+  {% endfor %}
+</table>
+{% endblock %}

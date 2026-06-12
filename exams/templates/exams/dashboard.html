@@ -1,0 +1,57 @@
+{% extends "exams/base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+{% if teacher %}
+<div class="card">
+  <h2>My classes — enter marks</h2>
+  {% if assignments %}
+  <table>
+    <tr><th>Subject</th><th>Class</th><th>Enter marks for…</th></tr>
+    {% for a in assignments %}
+    <tr>
+      <td>{{ a.subject }}</td>
+      <td>{{ a.classroom }}</td>
+      <td>
+        {% for exam in exams %}
+          {% if not exam.published %}
+            <a href="{% url 'mark_entry' a.id exam.id %}">{{ exam }}</a>{% if not forloop.last %} · {% endif %}
+          {% endif %}
+        {% endfor %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p>You have no teaching assignments yet. Ask the admin to assign you subjects and classes.</p>
+  {% endif %}
+</div>
+{% endif %}
+
+<div class="card">
+  <h2>Results</h2>
+  <table>
+    <tr><th>Exam</th><th>Status</th><th>By class</th><th>By form</th></tr>
+    {% for exam in exams %}
+    <tr>
+      <td>{{ exam }}</td>
+      <td>{% if exam.published %}Published{% else %}In progress{% endif %}</td>
+      <td>
+        {% for c in classrooms %}
+          <a href="{% url 'class_results' c.id exam.id %}">{{ c }}</a>{% if not forloop.last %} · {% endif %}
+        {% endfor %}
+      </td>
+      <td>
+        <a href="{% url 'form_results' 1 exam.id %}">F1</a> ·
+        <a href="{% url 'form_results' 2 exam.id %}">F2</a> ·
+        <a href="{% url 'form_results' 3 exam.id %}">F3</a> ·
+        <a href="{% url 'form_results' 4 exam.id %}">F4</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">No exams yet — create one in the Admin panel.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+
+{% endblock %}
