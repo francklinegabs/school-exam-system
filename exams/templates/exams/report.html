@@ -1,0 +1,56 @@
+{% extends "exams/base.html" %}
+{% block title %}Report form{% endblock %}
+{% block content %}
+<div class="card" style="max-width: 720px; margin: 0 auto;">
+  <div style="text-align:center; border-bottom: 2px solid var(--head); padding-bottom: 10px;">
+    <h2 style="margin:0">STUDENT REPORT FORM</h2>
+    <p style="margin:4px 0 0">{{ exam }}</p>
+  </div>
+
+  <table style="margin: 14px 0; border: 0">
+    <tr>
+      <td style="border:0"><b>Name:</b> {{ student.full_name }}</td>
+      <td style="border:0"><b>Adm No:</b> {{ student.admission_no }}</td>
+      <td style="border:0"><b>Class:</b> {{ student.classroom }}</td>
+    </tr>
+  </table>
+
+  <table>
+    <tr><th>Subject</th><th class="num">Score</th><th>Grade</th><th class="num">Points</th></tr>
+    {% for row in subject_rows %}
+    <tr>
+      <td>{{ row.subject.name }}</td>
+      <td class="num">{% if row.score is not None %}{{ row.score|floatformat:0 }}{% else %}—{% endif %}</td>
+      <td class="grade">{{ row.grade }}</td>
+      <td class="num">{{ row.points|default_if_none:"—" }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  {% if report.line %}
+  <table style="margin-top: 14px">
+    <tr>
+      <th>Total Marks</th><th>Mean Score</th><th>Total Points</th>
+      <th>Mean Grade</th><th>Class Position</th><th>Form Position</th>
+    </tr>
+    <tr>
+      <td class="num">{{ report.line.total|floatformat:0 }}</td>
+      <td class="num">{{ report.line.mean_score|floatformat:1 }}%</td>
+      <td class="num">{{ report.line.total_points }}</td>
+      <td class="grade">{{ report.line.mean_grade }}</td>
+      <td class="num">{{ report.class_rank }} / {{ report.class_size }}</td>
+      <td class="num">{{ report.form_rank }} / {{ report.form_size }}</td>
+    </tr>
+  </table>
+  {% else %}
+  <p>No marks recorded for this exam yet.</p>
+  {% endif %}
+
+  <p class="noprint" style="margin-top: 16px">
+    <button class="btn secondary" onclick="window.print()">Print report form</button>
+    {% for e in other_exams %}
+      <a href="{% url 'report' student.id e.id %}">{{ e.name }} T{{ e.term }} {{ e.year }}</a>{% if not forloop.last %} · {% endif %}
+    {% endfor %}
+  </p>
+</div>
+{% endblock %}

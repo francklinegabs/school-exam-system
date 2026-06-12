@@ -1,0 +1,25 @@
+{% extends "exams/base.html" %}
+{% block title %}Enter marks{% endblock %}
+{% block content %}
+<h2>{{ assignment.subject }} — {{ assignment.classroom }}</h2>
+<p>{{ exam }} (out of {{ exam.out_of }}) · leave blank if the student did not sit.</p>
+
+<form method="post" class="card">
+  {% csrf_token %}
+  <table style="max-width: 640px">
+    <tr><th>Adm No</th><th>Student</th><th style="width:120px">Score</th></tr>
+    {% for row in rows %}
+    <tr>
+      <td>{{ row.student.admission_no }}</td>
+      <td>{{ row.student.full_name }}</td>
+      <td><input type="number" name="score_{{ row.student.id }}" value="{{ row.score }}"
+                 min="0" max="{{ exam.out_of }}" step="0.5" style="width:100px"></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="3">No students in this class take {{ assignment.subject }}.</td></tr>
+    {% endfor %}
+  </table>
+  <p><button class="btn" type="submit">Save marks</button>
+     <a class="btn secondary" href="{% url 'dashboard' %}">Back</a></p>
+</form>
+{% endblock %}

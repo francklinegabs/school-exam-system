@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}School Exam System{% endblock %}</title>
+<style>
+  :root { --ink: #1c2733; --line: #d7dee6; --head: #0b5d3b; --soft: #f4f7f5; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Segoe UI", system-ui, sans-serif; color: var(--ink); background: #fbfcfb; }
+  header { background: var(--head); color: #fff; padding: 10px 20px; display: flex; align-items: center; gap: 16px; }
+  header h1 { font-size: 1.05rem; margin: 0; letter-spacing: .5px; }
+  header nav { margin-left: auto; display: flex; gap: 14px; align-items: center; }
+  header a { color: #d6f5e3; text-decoration: none; font-size: .9rem; }
+  main { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+  h2 { font-size: 1.2rem; margin: 18px 0 10px; }
+  table { border-collapse: collapse; width: 100%; background: #fff; font-size: .9rem; }
+  th, td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; }
+  th { background: var(--soft); font-weight: 600; }
+  tr:nth-child(even) td { background: #fafcfb; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .btn { display: inline-block; background: var(--head); color: #fff; border: 0; padding: 8px 16px;
+         border-radius: 5px; font-size: .9rem; cursor: pointer; text-decoration: none; }
+  .btn.secondary { background: #5b6b7b; }
+  input[type=number], input[type=text], input[type=password], select {
+    padding: 6px 8px; border: 1px solid var(--line); border-radius: 4px; font-size: .9rem; }
+  .msg { padding: 9px 14px; border-radius: 5px; margin: 8px 0; font-size: .9rem; }
+  .msg.success { background: #e2f5e9; color: #11633c; }
+  .msg.error { background: #fdebea; color: #92312a; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; margin-bottom: 16px; }
+  .grade { font-weight: 700; }
+  @media print { header, .noprint { display: none; } main { margin: 0; max-width: none; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>SCHOOL EXAM SYSTEM</h1>
+  <nav>
+    {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}">Dashboard</a>
+      {% if user.is_staff %}<a href="/admin/">Admin</a>{% endif %}
+      <span style="opacity:.8">{{ user.get_full_name|default:user.username }}</span>
+      <form method="post" action="{% url 'logout' %}" style="margin:0">{% csrf_token %}
+        <button class="btn secondary" type="submit">Log out</button>
+      </form>
+    {% endif %}
+  </nav>
+</header>
+<main>
+  {% for message in messages %}
+    <div class="msg {{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>
