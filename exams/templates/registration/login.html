@@ -9,6 +9,7 @@
     <p><label>Username<br>{{ form.username }}</label></p>
     <p><label>Password<br>{{ form.password }}</label></p>
     <button class="btn" type="submit">Log in</button>
+    <a class="btn secondary" href="{% url 'signup' %}">Sign up</a>
   </form>
 </div>
 {% endblock %}

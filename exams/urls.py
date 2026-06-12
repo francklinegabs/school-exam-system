@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path("", views.dashboard, name="dashboard"),
+    path("accounts/signup/", views.signup, name="signup"),
     path("entry/<int:assignment_id>/<int:exam_id>/", views.mark_entry,
          name="mark_entry"),
     path("results/class/<int:classroom_id>/<int:exam_id>/",

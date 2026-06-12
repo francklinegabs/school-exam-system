@@ -1,0 +1,23 @@
+{% extends "exams/base.html" %}
+{% block title %}Sign up{% endblock %}
+{% block content %}
+<div class="card" style="max-width: 440px; margin: 40px auto;">
+  <h2>Teacher Sign Up</h2>
+  <p style="opacity:.75; font-size:.9rem">Create your teacher account. The admin
+  will assign you subjects and classes before you can enter marks.</p>
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <p>
+        <label>{{ field.label }}<br>{{ field }}</label>
+        {% if field.help_text %}<br><small style="opacity:.65">{{ field.help_text }}</small>{% endif %}
+        {% for error in field.errors %}
+          <br><small class="msg error" style="display:inline-block; padding:3px 8px">{{ error }}</small>
+        {% endfor %}
+      </p>
+    {% endfor %}
+    <button class="btn" type="submit">Create account</button>
+    <a class="btn secondary" href="{% url 'login' %}">I have an account</a>
+  </form>
+</div>
+{% endblock %}
